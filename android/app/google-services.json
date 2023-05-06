@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "485589107433",
+    "project_id": "sport-f7ae1",
+    "storage_bucket": "sport-f7ae1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485589107433:android:cd055c8bc820ff9f68e678",
+        "android_client_info": {
+          "package_name": "com.example.sport"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "485589107433-vqs90rpfn5rv0njiq94s0j8jt0pea3mu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnLk8s9FcOGgEnB6VyIbyLHQRfz0ohhhA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "485589107433-vqs90rpfn5rv0njiq94s0j8jt0pea3mu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "485589107433-5r6ec93vuhahnramehold5ijbb8893uk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sport"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:485589107433:android:c948b8f8939fbb6e68e678",
+        "android_client_info": {
+          "package_name": "example.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "485589107433-vqs90rpfn5rv0njiq94s0j8jt0pea3mu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnLk8s9FcOGgEnB6VyIbyLHQRfz0ohhhA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "485589107433-vqs90rpfn5rv0njiq94s0j8jt0pea3mu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "485589107433-5r6ec93vuhahnramehold5ijbb8893uk.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.sport"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
