@@ -9,6 +9,7 @@ import 'web_view.dart';
 import 'package:path_provider/path_provider.dart';
 import 'quiz_data.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:lottie/lottie.dart';
 
 
 
@@ -46,14 +47,12 @@ class MyHomePage extends StatefulWidget {
 
 
 class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
+    {
+
 
   @override
   void initState() {
     checkLinc();
-    _controller = AnimationController(vsync: this, duration: Duration(seconds: 200))..repeat();
-    _controller.forward();
     super.initState();
   }
 
@@ -129,7 +128,6 @@ class _MyHomePageState extends State<MyHomePage>
       var linkFirebase =  remoteConfig.getString('link');
       String link = jsonDecode(linkFirebase)["link"];
       final documentDirectory = await getApplicationDocumentsDirectory();
-      print(link);
       Hive.init(documentDirectory.path);
       var box = await Hive.openBox('linkStorage');
       await box.put('link', link);
@@ -152,22 +150,12 @@ class _MyHomePageState extends State<MyHomePage>
       backgroundColor: Colors.greenAccent,
       body: Center(
         child: Column(
+
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            RotationTransition(
-              turns: Tween(begin: 0.0, end: 100.0).animate(_controller),
-              child: const Icon(Icons.refresh_sharp, size: 140.0,),
-            ),
             const Text("Loading data...", textScaleFactor: 5,),
-            // ElevatedButton(
-            //   child: Text("go"),
-            //   onPressed: () => _controller.forward(),
-            // ),
-            // ElevatedButton(
-            //   child: Text("reset"),
-            //   onPressed: () => _controller.reset(),
-            // ),
+            Lottie.asset('assets/LottieLogo.json'),
           ],
         ),
       ),

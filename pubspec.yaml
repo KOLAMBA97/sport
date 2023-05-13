@@ -44,6 +44,7 @@ dependencies:
   firebase_remote_config: ^4.1.0
   firebase_analytics: ^10.3.0
   device_info_plus: ^8.2.2
+  lottie: ^2.3.2
 
 
 dev_dependencies:
@@ -74,6 +75,7 @@ flutter:
     - United States, Canada and Mexico.png
     - Uruguay.png
     - background.png
+    - LottieLogo.json
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
